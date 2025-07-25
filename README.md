@@ -126,7 +126,7 @@ This project follows a **multi-tenant SaaS architecture**, where each user can m
 
 ---
 
-### 🔑 Core Logic
+### Core Logic
 
 - Each authenticated user can **create and manage multiple companies**.
 - The user can **switch between companies** using the `/company/{id}/switch` endpoint.
@@ -135,7 +135,7 @@ This project follows a **multi-tenant SaaS architecture**, where each user can m
 
 ---
 
-### 🔒 Data Scoping Rules
+### Data Scoping Rules
 
 - **Projects and Invoices are always linked to the active company**.
 - The API checks that:
@@ -145,7 +145,7 @@ This project follows a **multi-tenant SaaS architecture**, where each user can m
 
 ---
 
-### 🛡 Example
+### Example
 
 1. User logs in and switches to `Company A`.
 2. When calling `POST /project/store`, the new project is automatically saved with `company_id = Company A`.
