@@ -59,3 +59,99 @@ If you discover a security vulnerability within Laravel, please send an e-mail t
 ## License
 
 The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+
+# Laravel Multi-Tenant SaaS Task
+
+### Features
+- User authentication (Laravel Breeze API)
+- Users can manage multiple companies
+- Can switch between companies
+- Data scoped to the active company
+
+## 📡 API Endpoints
+
+### Authentication
+
+- `POST /register` → Register a new user
+- `POST /login` → Log in and receive token
+- `POST /logout` → Log out the authenticated user
+
+---
+
+### Company Endpoints
+
+- `POST /companies` → Get a list of companies for the logged-in user
+- `POST /company/store` → Create a new company
+- `PUT /company/update/{id}` → Update an existing company
+- `POST /company/delete/{id}` → Soft-delete a company
+- `POST /company/{id}/switch` → Set the active company for the user
+
+---
+
+### Project Endpoints
+
+- `POST /projects` → Get a list of all projects under the active company
+- `POST /project/store` → Create a new project
+- `Put /project/update/{id}` → Update a project by ID
+- `POST /project/delete/{id}` → Delete a project by ID
+
+---
+
+### Invoice Endpoints
+
+- `POST /invoices` → Get a list of all invoices under the active company
+- `POST /invoice/store` → Create a new invoice (must belong to active company project)
+- `Put /invoice/update/{id}` → Update an invoice by ID
+- `POST /invoice/delete/{id}` → Delete an invoice by ID
+
+---
+
+### Notes
+
+- All project and invoice actions are scoped to the currently active company.
+- You must call `/company/{id}/switch` before interacting with scoped resources.
+- All dates must use the `YYYY-MM-DD` format (e.g., `2025-07-25`).
+- Requests must include these headers:
+
+```http
+Authorization: Bearer {token}
+Accept: application/json
+Content-Type: application/json
+
+-----
+
+## Multi-Tenant Logic & Data Scoping
+
+This project follows a **multi-tenant SaaS architecture**, where each user can manage **multiple companies**, but all operational data (projects, invoices, etc.) is **strictly scoped to one "active" company** at a time.
+
+---
+
+### 🔑 Core Logic
+
+- Each authenticated user can **create and manage multiple companies**.
+- The user can **switch between companies** using the `/company/{id}/switch` endpoint.
+- The ID of the active company is stored in the `active_company_id` column in the `users` table.
+- When the user performs operations like creating a project or invoice, the system **automatically attaches the active company ID** to that data.
+
+---
+
+### 🔒 Data Scoping Rules
+
+- **Projects and Invoices are always linked to the active company**.
+- The API checks that:
+  - `project_id` used in an invoice **belongs to the active company**.
+  - You **cannot access or modify** projects or invoices from other companies.
+- Each API controller checks ownership by verifying `company_id` before performing any action.
+
+---
+
+### 🛡 Example
+
+1. User logs in and switches to `Company A`.
+2. When calling `POST /project/store`, the new project is automatically saved with `company_id = Company A`.
+3. The user switches to `Company B` using `/company/2/switch`.
+4. Now any list/create/update/delete actions affect **only** `Company B`.
+
+This ensures strict **data isolation per company** and maintains the **integrity of tenant-specific data**.
+
+---

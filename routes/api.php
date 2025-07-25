@@ -22,13 +22,13 @@ Route::middleware('auth:sanctum')->group(function () {
     // ProjectS Controller
     Route::post('/projects', [ProjectController::class, 'index']);
     Route::post('/project/store', [ProjectController::class, 'store']);
-    Route::post('/project/update/{id}', [ProjectController::class, 'update']);
+    Route::putt('/project/update/{id}', [ProjectController::class, 'update']);
     Route::post('/project/delete/{id}', [ProjectController::class, 'delete']);
 
     //Invoices Controller
     Route::post('/invoices', [InvoiceController::class, 'index']);
     Route::post('/invoice/store', [InvoiceController::class, 'store']);
-    Route::post('/invoice/update/{id}', [InvoiceController::class, 'update']);
+    Route::put('/invoice/update/{id}', [InvoiceController::class, 'update']);
     Route::post('/invoice/delete/{id}', [InvoiceController::class, 'delete']);
 
     Route::post('/logout', [AuthController::class, 'logout']);
